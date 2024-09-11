@@ -12,7 +12,9 @@ export default defineConfig({
 		},
 	},
 	build: {
-		minify: false,
+		outDir: "../API/wwwroot",
+		emptyOutDir: true,
+		sourcemap: true,
 	},
 	server: {
 		port: 5143,

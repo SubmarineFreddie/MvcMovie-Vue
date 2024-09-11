@@ -4,7 +4,7 @@ import ExtraListContent from "@/components/ExtraListContent.vue"
 import LoadingOverlay from "@/components/LoadingOverlay.vue"
 import PageCounter from "@/components/PageCounter.vue"
 import PageSizeSelector from "@/components/PageSizeSelector.vue"
-import { debounce, delay } from "@/utils"
+import { debounce, delay, getOrCreateFromLocalStorage } from "@/utils"
 import CreateMovieModal from "./CreateMovieModal.vue"
 import DeleteMovieModal from "./DeleteMovieModal.vue"
 import EditMovieModal from "./EditMovieModal.vue"
@@ -27,7 +27,7 @@ export default {
 		return {
 			movies: [],
 			genres: [],
-			pageSize: Number.parseInt(localStorage.getItem("moviePageSize")) ?? 5,
+			pageSize: Number.parseInt(getOrCreateFromLocalStorage("moviePageSize", "5")),
 			pageNumber: 1,
 			totalPages: 0,
 			totalItems: 0,

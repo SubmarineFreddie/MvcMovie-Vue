@@ -4,7 +4,7 @@ import ExtraListContent from "@/components/ExtraListContent.vue"
 import LoadingOverlay from "@/components/LoadingOverlay.vue"
 import PageCounter from "@/components/PageCounter.vue"
 import PageSizeSelector from "@/components/PageSizeSelector.vue"
-import { debounce, delay } from "@/utils"
+import { debounce, delay, getOrCreateFromLocalStorage } from "@/utils"
 import CreateGenreModal from "./CreateGenreModal.vue"
 import DeleteGenreModal from "./DeleteGenreModal.vue"
 import EditGenreModal from "./EditGenreModal.vue"
@@ -26,7 +26,7 @@ export default {
 	data() {
 		return {
 			genres: [],
-			pageSize: Number.parseInt(localStorage.getItem("genrePageSize")) ?? 5,
+			pageSize: Number.parseInt(getOrCreateFromLocalStorage("genrePageSize", "5")),
 			pageNumber: 1,
 			totalPages: 0,
 			totalItems: 0,
