@@ -1,0 +1,38 @@
+.pageCounter {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 20px;
+}
+
+.pageCounter p {
+	margin: 0 15px;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.pageCounter input {
+	margin-left: 0.5rem;
+	margin-right: 0.5rem;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	padding: 10px 16px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	border-radius: 3rem;
+}
+
+.pageCounter input:disabled {
+	background-color: #bdbdbd;
+	cursor: not-allowed;
+}
+
+.pageCounter input:hover {
+	background-color: #0056b3;
+}
+
+.pageCounter input:active {
+	background-color: #004085;
+}

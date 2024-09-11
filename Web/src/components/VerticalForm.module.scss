@@ -1,0 +1,13 @@
+.verticalForm {
+	display: flex;
+	flex-direction: column;
+}
+
+.verticalForm label {
+	display: flex;
+	flex-direction: column;
+}
+
+.verticalForm input {
+	margin-bottom: 1rem;
+}

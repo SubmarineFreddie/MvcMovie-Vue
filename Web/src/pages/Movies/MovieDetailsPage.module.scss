@@ -1,0 +1,22 @@
+.splitBox {
+	display: flex;
+	justify-content: space-between;
+}
+
+.detailBox {
+	width: 50%;
+}
+
+.infoBox {
+	width: 50%;
+	margin-left: 5rem;
+}
+
+.infoBox h3 {
+	padding-top: 2rem;
+}
+
+.infoBox img {
+	max-width: 100%;
+	max-height: 30rem;
+}
