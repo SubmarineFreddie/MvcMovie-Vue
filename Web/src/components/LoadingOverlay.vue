@@ -1,15 +1,6 @@
-<script>
+<script setup lang="ts">
 import loadingSpinnerGif from "@/assets/loading-7528_256.gif"
 import styles from "./LoadingOverlay.module.scss"
-
-export default {
-	data() {
-		return {
-			loadingSpinnerGif,
-			styles,
-		}
-	},
-}
 </script>
 
 <template>

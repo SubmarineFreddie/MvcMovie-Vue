@@ -1,6 +1,6 @@
-export function formatDateInput(date) {
+export function formatDateInput(date: Date | string | number) {
 	const jsDate = new Date(date)
-	function padZeros(str, length = 2) {
+	function padZeros(str: string | number, length = 2) {
 		return String(str).padStart(length, "0")
 	}
 

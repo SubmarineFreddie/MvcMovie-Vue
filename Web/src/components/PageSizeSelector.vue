@@ -1,25 +1,17 @@
-<script>
-import { defineComponent } from "vue"
+<script setup lang="ts">
+import { ref } from "vue"
 
-export default defineComponent({
-	props: {
-		pageSize: {
-			type: Number,
-			required: true,
-		},
-	},
-	data(props) {
-		return {
-			pageSizeValue: props.pageSize,
-		}
-	},
-	methods: {
-		handleChange() {
-			this.$emit("sizeChange", this.pageSizeValue)
-		},
-	},
-	emits: ["sizeChange"],
-})
+interface Emits {
+	(e: "size-change", newSize: number): void
+}
+
+const emit = defineEmits<Emits>()
+
+const pageSizeValue = ref(5)
+
+function handleChange() {
+	emit("size-change", pageSizeValue.value)
+}
 </script>
 
 <template>

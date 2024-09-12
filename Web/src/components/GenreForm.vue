@@ -1,38 +1,26 @@
-<script>
+<script setup lang="ts">
+import type { Genre } from "@/models"
+import { reactive } from "vue"
 import styles from "./VerticalForm.module.scss"
 
-export default {
-	props: {
-		actionType: {
-			type: String,
-			required: true,
-		},
-		isSubmitting: {
-			type: Boolean,
-			required: true,
-		},
-		selectedGenre: {
-			type: Object,
-			required: false,
-		},
-	},
-	data(props) {
-		return {
-			styles,
-			formType: props.actionType,
-			genreValue: props.selectedGenre
-				? { ...props.selectedGenre }
-				: {
-						name: "",
-					},
-		}
-	},
-	methods: {
-		handleSubmit(event) {
-			event.preventDefault()
-			this.$emit("form-submitted", this.genreValue)
-		},
-	},
+interface Props {
+	actionType: string
+	isSubmitting: boolean
+	selectedGenre?: Genre
+}
+
+interface Emits {
+	(e: "form-submitted", genre: Genre): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+const genreValue = reactive<Genre>(props.selectedGenre ? { ...props.selectedGenre } : { id: 0, name: "" })
+
+function handleSubmit(event: Event) {
+	event.preventDefault()
+	emit("form-submitted", genreValue)
 }
 </script>
 
@@ -42,6 +30,6 @@ export default {
 			Name*:
 			<input v-model="genreValue.name" type="text" required />
 		</label>
-		<input class="btn btn-primary" type="submit" :value="formType" :disabled="isSubmitting" />
+		<input class="btn btn-primary" type="submit" :value="actionType" :disabled="isSubmitting" />
 	</form>
 </template>

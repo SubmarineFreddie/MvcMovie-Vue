@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using API.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcMovie.Data;
 using MvcMovie.Models;
@@ -56,10 +57,10 @@ public class GenreSearchController : ControllerBase
         return data;
     }
 
-    private IQueryable<Genre> SortGenres(IQueryable<Genre> query, GenreSortDirection sortDirection) => sortDirection switch
+    private IQueryable<Genre> SortGenres(IQueryable<Genre> query, SortDirection sortDirection) => sortDirection switch
     {
-        GenreSortDirection.Ascending => query.OrderBy(i => i.Name),
-        GenreSortDirection.Descending => query.OrderByDescending(i => i.Name),
+        SortDirection.Ascending => query.OrderBy(i => i.Name),
+        SortDirection.Descending => query.OrderByDescending(i => i.Name),
     };
 
     /*[HttpPost]
@@ -82,14 +83,8 @@ public class GenreSearchController : ControllerBase
 
 public record GenreSearchOptions
 {
-    public int Page { get; set; }
+    public int Page { get; set; } = 1;
     public int PageSize { get; set; } = 10;
-    public string? Name { get; set; }
-    public GenreSortDirection SortDirection { get; set; }
-}
-
-public enum GenreSortDirection
-{
-    Ascending = 0,
-    Descending = 1,
+    public string? Name { get; set; } = null;
+    public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 }

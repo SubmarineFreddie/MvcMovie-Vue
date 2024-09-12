@@ -1,91 +1,86 @@
-<script>
+<script setup lang="ts">
 import { deleteMovie, getMovie, updateMovie } from "@/api"
 import DeleteForm from "@/components/DeleteForm.vue"
 import LoadingOverlay from "@/components/LoadingOverlay.vue"
 import Modal from "@/components/Modal.vue"
 import MovieForm from "@/components/MovieForm.vue"
+import { useQueryId } from "@/composition/useQueryId"
+import type { Movie } from "@/models"
 import { delay } from "@/utils"
-import { useRoute } from "vue-router"
+import { computed, onMounted, ref, watch } from "vue"
+import { useRouter } from "vue-router"
 import styles from "./MovieDetailsPage.module.scss"
 
-export default {
-	components: {
-		Modal,
-		MovieForm,
-		DeleteForm,
-		LoadingOverlay,
-	},
-	data() {
-		return {
-			styles,
-			movieId: useRoute().query.id,
-			movieValue: null,
-			isLoaded: false,
-			firstLoad: true,
-			isSubmitting: false,
-			showSavedMessage: false,
-			deleteModalOpen: false,
-		}
-	},
-	computed: {
-		movieImage() {
-			return this.movieValue.imageUrl == null ? "src/assets/NoImagePlaceholder.svg" : this.movieValue.imageUrl
-		},
-		movieSummary() {
-			return this.movieValue.summary?.length ? this.movieValue.summary : "No Summary Found"
-		},
-	},
-	async mounted() {
-		this.loadMovie(this.movieId)
-	},
-	methods: {
-		async loadMovie(id) {
-			this.isLoaded = false
-			try {
-				await delay(750)
-				this.movieValue = await getMovie(id)
-				this.firstLoad = false
-			} catch (error) {
-				alert(error)
-			} finally {
-				this.isLoaded = true
-			}
-		},
-		async handleUpdate() {
-			if (this.isSubmitting) {
-				return
-			}
+const router = useRouter()
+const movieId = useQueryId("id")
+const movieValue = ref<Movie | null>(null)
+const isLoaded = ref(false)
+const firstLoad = ref(true)
+const isSubmitting = ref(false)
+const showSavedMessage = ref(false)
+const deleteModalOpen = ref(false)
 
-			this.isSubmitting = true
-			try {
-				await updateMovie(this.movieValue)
-				this.showSavedMessage = true
-			} catch (error) {
-				alert(error)
-			} finally {
-				this.isSubmitting = false
-			}
-		},
-		async handleDelete() {
-			if (this.isSubmitting) {
-				return
-			}
+const movieImage = computed(() =>
+	movieValue.value != null && movieValue.value.imageUrl != null ? movieValue.value.imageUrl : "src/assets/NoImagePlaceholder.svg",
+)
+const movieSummary = computed(() =>
+	movieValue.value != null && movieValue.value.summary != null ? movieValue.value.summary : "No Summary Found",
+)
 
-			this.isSubmitting = true
-			try {
-				await deleteMovie(this.movieValue)
-				this.redirectToMovieList()
-			} catch (error) {
-				alert(error)
-			} finally {
-				this.isSubmitting = false
-			}
-		},
-		redirectToMovieList() {
-			this.$router.push("/movielist")
-		},
-	},
+function redirectToMovieList() {
+	router.push("/movielist")
 }
+
+async function loadMovie(id: number) {
+	isLoaded.value = false
+	try {
+		await delay(750)
+		movieValue.value = await getMovie(id)
+		firstLoad.value = false
+		isSubmitting.value = false
+		showSavedMessage.value = false
+		deleteModalOpen.value = false
+	} catch (error) {
+		alert(error)
+	} finally {
+		isLoaded.value = true
+	}
+}
+
+async function handleUpdate() {
+	if (isSubmitting.value || movieValue.value == null) {
+		return
+	}
+
+	isSubmitting.value = true
+	try {
+		await updateMovie(movieValue.value)
+		showSavedMessage.value = true
+	} catch (error) {
+		alert(error)
+	} finally {
+		isSubmitting.value = false
+	}
+}
+
+async function handleDelete() {
+	if (isSubmitting.value || movieValue.value == null) {
+		return
+	}
+
+	isSubmitting.value = true
+	try {
+		await deleteMovie(movieValue.value)
+		redirectToMovieList()
+	} catch (error) {
+		alert(error)
+	} finally {
+		isSubmitting.value = false
+	}
+}
+
+watch(movieId, () => loadMovie(movieId.value))
+onMounted(() => loadMovie(movieId.value))
 </script>
 
 <template>

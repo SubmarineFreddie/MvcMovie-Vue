@@ -1,41 +1,31 @@
-<script>
-import { defineComponent } from "vue"
+<script setup lang="ts">
 import styles from "./ExtraListContent.module.scss"
 
-export default defineComponent({
-	data() {
-		return { styles }
-	},
-	props: {
-		totalPages: {
-			type: Number,
-			required: true,
-		},
-		totalItems: {
-			type: Number,
-			required: true,
-		},
-		itemType: {
-			type: String,
-			required: true,
-		},
-	},
-	methods: {
-		handleRefresh(event) {
-			event.preventDefault()
-			this.$emit("refresh")
-		},
-	},
-	emits: ["refresh"],
-})
+interface Props {
+	totalPages: number
+	totalItems: number
+	itemType: string
+}
+
+interface Emits {
+	(e: "refresh"): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+function handleRefresh(event: Event) {
+	event.preventDefault()
+	emit("refresh")
+}
 </script>
 
 <template>
 	<div :class="styles.extraContent">
 		<input @click="handleRefresh" class="btn btn-primary" type="submit" value="Refresh" />
 		<div :class="styles.metrics">
-			<p>Total Pages: {{ totalPages }}</p>
-			<p>Total {{ itemType }}: {{ totalItems }}</p>
+			<p>Total Pages: {{ props.totalPages }}</p>
+			<p>Total {{ props.itemType }}: {{ props.totalItems }}</p>
 		</div>
 	</div>
 </template>

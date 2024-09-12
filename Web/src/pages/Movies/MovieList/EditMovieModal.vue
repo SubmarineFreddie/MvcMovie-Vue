@@ -1,49 +1,44 @@
-<script>
+<script setup lang="ts">
 import { updateMovie } from "@/api"
 import Modal from "@/components/Modal.vue"
 import MovieForm from "@/components/MovieForm.vue"
+import type { Movie } from "@/models"
+import { reactive, ref } from "vue"
 
-export default {
-	props: {
-		selectedMovie: {
-			type: Object,
-			required: true,
-		},
-	},
-	components: {
-		Modal,
-		MovieForm,
-	},
-	data(props) {
-		return {
-			movieValue: {
-				...props.selectedMovie,
-			},
-			isSubmitting: false,
-		}
-	},
-	methods: {
-		async handleSubmit() {
-			if (this.isSubmitting) {
-				return
-			}
+interface Props {
+	selectedMovie: Movie
+}
 
-			this.isSubmitting = true
-			try {
-				await updateMovie(this.movieValue)
-				this.$emit("movieEdited")
-			} catch (error) {
-				alert(error)
-			} finally {
-				this.isSubmitting = false
-			}
-		},
-	},
+interface Emits {
+	(e: "movie-edited"): void
+	(e: "modal-cancel"): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+const movieValue = reactive<Movie>({ ...props.selectedMovie })
+const isSubmitting = ref(false)
+
+async function handleSubmit() {
+	if (isSubmitting.value) {
+		return
+	}
+
+	isSubmitting.value = true
+	try {
+		await updateMovie(movieValue)
+		emit("movie-edited")
+	} catch (error) {
+		alert(error)
+	} finally {
+		isSubmitting.value = false
+	}
 }
 </script>
 
 <template>
-	<Modal show-close @onClose="$emit('modalCancel')">
+	<Modal show-close @onClose="$emit('modal-cancel')">
 		<MovieForm
 			action-type="Update"
 			:is-submitting="isSubmitting"

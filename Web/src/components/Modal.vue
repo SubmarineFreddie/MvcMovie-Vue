@@ -1,25 +1,22 @@
-<script>
-import { defineComponent } from "vue"
+<script setup lang="ts">
 import styles from "./Modal.module.scss"
 
-export default defineComponent({
-	data() {
-		return { styles }
-	},
-	props: {
-		showClose: {
-			type: Boolean,
-			required: true,
-		},
-	},
-	emits: ["onClose"],
-})
+interface Props {
+	showClose: boolean
+}
+
+interface Emits {
+	(e: "on-close"): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
 </script>
 
 <template>
 	<div :class="styles.modal">
 		<div :class="styles.modalContent">
-			<span v-if="showClose" @click="$emit('onClose')" :class="styles.close">&times;</span>
+			<span v-if="props.showClose" @click="emit('on-close')" :class="styles.close">&times;</span>
 			<slot></slot>
 		</div>
 	</div>

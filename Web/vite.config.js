@@ -15,6 +15,7 @@ export default defineConfig({
 		outDir: "../API/wwwroot",
 		emptyOutDir: true,
 		sourcemap: true,
+		minify: true,
 	},
 	server: {
 		port: 5143,

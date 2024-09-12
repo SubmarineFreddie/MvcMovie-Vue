@@ -1,49 +1,44 @@
-<script>
+<script setup lang="ts">
 import { deleteGenre } from "@/api"
 import DeleteForm from "@/components/DeleteForm.vue"
 import Modal from "@/components/Modal.vue"
+import type { Genre } from "@/models"
+import { reactive, ref } from "vue"
 
-export default {
-	props: {
-		selectedGenre: {
-			type: Object,
-			required: true,
-		},
-	},
-	components: {
-		Modal,
-		DeleteForm,
-	},
-	data(props) {
-		return {
-			genreValue: {
-				...props.selectedGenre,
-			},
-			isSubmitting: false,
-		}
-	},
-	methods: {
-		async handleSubmit() {
-			if (this.isSubmitting) {
-				return
-			}
+interface Props {
+	selectedGenre: Genre
+}
 
-			this.isSubmitting = true
-			try {
-				await deleteGenre(this.genreValue)
-				this.$emit("genreDeleted")
-			} catch (error) {
-				alert(error)
-			} finally {
-				this.isSubmitting = false
-			}
-		},
-	},
+interface Emits {
+	(e: "genre-deleted"): void
+	(e: "modal-cancel"): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+const genreValue = reactive<Genre>(props.selectedGenre)
+const isSubmitting = ref(false)
+
+async function handleSubmit() {
+	if (isSubmitting.value) {
+		return
+	}
+
+	isSubmitting.value = true
+	try {
+		await deleteGenre(genreValue)
+		emit("genre-deleted")
+	} catch (error) {
+		alert(error)
+	} finally {
+		isSubmitting.value = false
+	}
 }
 </script>
 
 <template>
 	<Modal :show-close="false">
-		<DeleteForm action-type="genre" :is-submitting="isSubmitting" @form-submitted="handleSubmit" @onClose="$emit('modalCancel')" />
+		<DeleteForm action-type="genre" :is-submitting="isSubmitting" @form-submitted="handleSubmit" @onClose="emit('modal-cancel')" />
 	</Modal>
 </template>

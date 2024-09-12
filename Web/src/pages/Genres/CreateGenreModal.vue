@@ -1,47 +1,43 @@
-<script>
+<script setup lang="ts">
 import { createGenre } from "@/api"
 import GenreForm from "@/components/GenreForm.vue"
 import Modal from "@/components/Modal.vue"
+import type { Genre } from "@/models"
+import { reactive, ref } from "vue"
 
-export default {
-	components: {
-		Modal,
-		GenreForm,
-	},
-	data() {
-		return {
-			genreValue: {
-				name: "",
-			},
-			isSubmitting: false,
-		}
-	},
-	methods: {
-		async handleSubmit() {
-			if (this.isSubmitting) {
-				return
-			}
+interface Emits {
+	(e: "genre-created"): void
+	(e: "modal-cancel"): void
+}
 
-			this.isSubmitting = true
-			try {
-				await createGenre(this.genreValue)
-				this.$emit("genreCreated")
-			} catch (error) {
-				alert(error)
-			} finally {
-				this.isSubmitting = false
-			}
-		},
-	},
+const emit = defineEmits<Emits>()
+
+const genreValue = reactive<Genre>({ id: 0, name: "" })
+const isSubmitting = ref(false)
+
+async function handleSubmit() {
+	if (isSubmitting.value) {
+		return
+	}
+
+	isSubmitting.value = true
+	try {
+		await createGenre(genreValue)
+		emit("genre-created")
+	} catch (error) {
+		alert(error)
+	} finally {
+		isSubmitting.value = false
+	}
 }
 </script>
 
 <template>
-	<Modal show-close @onClose="$emit('modalCancel')">
+	<Modal show-close @onClose="$emit('modal-cancel')">
 		<GenreForm
 			action-type="Create"
 			:is-submitting="isSubmitting"
-			@formSubmitted="
+			@form-submitted="
 				(genre) => {
 					genreValue = genre
 					handleSubmit()

@@ -1,50 +1,44 @@
-<script>
+<script setup lang="ts">
 import { deleteMovie } from "@/api"
 import DeleteForm from "@/components/DeleteForm.vue"
 import Modal from "@/components/Modal.vue"
-import { defineComponent } from "vue"
+import type { Movie } from "@/models"
+import { reactive, ref } from "vue"
 
-export default defineComponent({
-	props: {
-		selectedMovie: {
-			type: Object,
-			required: true,
-		},
-	},
-	components: {
-		Modal,
-		DeleteForm,
-	},
-	data(props) {
-		return {
-			movieValue: {
-				...props.selectedMovie,
-			},
-			isSubmitting: false,
-		}
-	},
-	methods: {
-		async handleSubmit() {
-			if (this.isSubmitting) {
-				return
-			}
+interface Props {
+	selectedMovie: Movie
+}
 
-			this.isSubmitting = true
-			try {
-				await deleteMovie(this.movieValue)
-				this.$emit("movieDeleted")
-			} catch (error) {
-				alert(error)
-			} finally {
-				this.isSubmitting = false
-			}
-		},
-	},
-})
+interface Emits {
+	(e: "movie-deleted"): void
+	(e: "modal-cancel"): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+const movieValue = reactive<Movie>(props.selectedMovie)
+const isSubmitting = ref(false)
+
+async function handleSubmit() {
+	if (isSubmitting.value) {
+		return
+	}
+
+	isSubmitting.value = true
+	try {
+		await deleteMovie(movieValue)
+		emit("movie-deleted")
+	} catch (error) {
+		alert(error)
+	} finally {
+		isSubmitting.value = false
+	}
+}
 </script>
 
 <template>
 	<Modal :show-close="false">
-		<DeleteForm action-type="movie" :is-submitting="isSubmitting" @form-submitted="handleSubmit" @onClose="$emit('modalCancel')" />
+		<DeleteForm action-type="movie" :is-submitting="isSubmitting" @form-submitted="handleSubmit" @onClose="$emit('modal-cancel')" />
 	</Modal>
 </template>

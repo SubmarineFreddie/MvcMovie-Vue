@@ -1,20 +1,10 @@
-/**
- *
- * @param {string} url
- * @param {RequestInit=} options
- * @returns
- */
-export async function fetchAndValidate(url, options) {
-	const response = await fetch(url, options)
+export async function fetchAndValidate(input: RequestInfo | URL, init?: RequestInit) {
+	const response = await fetch(input, init)
 	await validateResponse(response)
 	return response
 }
 
-/**
- * @param {Response} response
- * @returns {Promise<void>}
- */
-export async function validateResponse(response) {
+export async function validateResponse(response: Response) {
 	if (response.ok) {
 		return
 	}

@@ -1,57 +1,44 @@
-<script>
+<script setup lang="ts">
 import { getGenres } from "@/api"
+import type { Genre, Movie } from "@/models"
+import { onMounted, reactive, ref } from "vue"
 import styles from "./VerticalForm.module.scss"
 
-export default {
-	props: {
-		actionType: {
-			type: String,
-			required: true,
-		},
-		isSubmitting: {
-			type: Boolean,
-			required: true,
-		},
-		selectedMovie: {
-			type: Object,
-			required: false,
-		},
-	},
-	data(props) {
-		return {
-			styles,
-			genres: [],
-			movieValue: props.selectedMovie
-				? { ...props.selectedMovie }
-				: {
-						title: "",
-						releaseDate: "",
-						genres: [],
-						price: 0,
-						rating: "",
-						imageUrl: "",
-						summary: "",
-					},
-		}
-	},
-	async mounted() {
-		this.excecuteGetGenres()
-	},
-	methods: {
-		handleSubmit(event) {
-			event.preventDefault()
-			this.$emit("form-submitted", this.movieValue)
-		},
-		async excecuteGetGenres() {
-			try {
-				let response = await getGenres()
-				this.genres = response
-			} catch (error) {
-				alert(error)
-			}
-		},
-	},
+interface Props {
+	actionType: string
+	isSubmitting: boolean
+	selectedMovie?: Movie
 }
+
+interface Emits {
+	(e: "form-submitted", movie: Movie): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+const genres = ref<Genre[]>([])
+const movieValue = reactive<Movie>(
+	props.selectedMovie
+		? { ...props.selectedMovie }
+		: { id: 0, title: "", releaseDate: "", genres: [], price: 0, rating: "", imageUrl: "", summary: "" },
+)
+
+function handleSubmit(event: Event) {
+	event.preventDefault()
+	emit("form-submitted", movieValue)
+}
+
+async function excecuteGetGenres() {
+	try {
+		let response = await getGenres()
+		genres.value = response
+	} catch (error) {
+		alert(error)
+	}
+}
+
+onMounted(excecuteGetGenres)
 </script>
 
 <template>
@@ -68,7 +55,7 @@ export default {
 			Genre*:
 			<select v-model="movieValue.genres" required multiple>
 				<option :value="null">Please Select</option>
-				<option v-for="genre in genres" :value="genre">{{ genre.name }}</option>
+				<option v-for="genre in genres" :key="genre.id" :value="genre">{{ genre.name }}</option>
 			</select>
 		</label>
 		<label>

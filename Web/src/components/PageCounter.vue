@@ -1,42 +1,33 @@
-<script>
-import { defineComponent } from "vue"
+<script setup lang="ts">
+import { computed } from "vue"
 import styles from "./PageCounter.module.scss"
 
-export default defineComponent({
-	data() {
-		return { styles }
-	},
-	props: {
-		pageNumber: {
-			type: Number,
-			required: true,
-		},
-		totalPages: {
-			type: Number,
-			required: true,
-		},
-	},
-	methods: {
-		firstPage() {
-			this.$emit("pageChange", 1)
-		},
-		previousPage() {
-			this.$emit("pageChange", this.pageNumber - 1)
-		},
-		nextPage() {
-			this.$emit("pageChange", this.pageNumber + 1)
-		},
-		lastPage() {
-			this.$emit("pageChange", this.totalPages)
-		},
-	},
-	emits: ["pageChange"],
-	computed: {
-		finalPage() {
-			return this.pageNumber >= this.totalPages
-		},
-	},
-})
+interface Props {
+	pageNumber: number
+	totalPages: number
+}
+
+interface Emits {
+	(e: "page-change", pageNumber: number): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+const finalPage = computed(() => props.pageNumber >= props.totalPages)
+
+function firstPage() {
+	emit("page-change", 1)
+}
+function previousPage() {
+	emit("page-change", props.pageNumber - 1)
+}
+function nextPage() {
+	emit("page-change", props.pageNumber + 1)
+}
+function lastPage() {
+	emit("page-change", props.totalPages)
+}
 </script>
 
 <template>
